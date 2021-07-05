@@ -1,0 +1,66 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: "S3 Buckets creation for CSV raw data"
+
+Parameters:
+  CSVBucketName:
+    Type: String
+    Description: CSV Data S3 bucket
+    Default: vplk-csv-data
+  Service:
+    Description: Service tag
+    Type: String
+    Default: Vepolink
+  Environment:
+    Description: Environment tag
+    Type: String
+    Default: DEV
+
+
+Resources:
+
+  CSVBucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+    Properties:
+      BucketName:
+        !Sub '${CSVBucketName}-${AWS::Region}-${Environment}'
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: True
+        BlockPublicPolicy: True
+        IgnorePublicAcls: True
+        RestrictPublicBuckets: True
+      VersioningConfiguration:
+        Status: Enabled
+      Tags:
+        - Key: Service
+          Value: !Ref Service
+        - Key: Environment
+          Value: !Ref Environment
+  
+  CSVBucketPolicy:
+    Type: 'AWS::S3::BucketPolicy'
+    Properties:
+      Bucket: !Ref CSVBucket
+      PolicyDocument:
+        Statement:
+          - Action:
+              - 's3:GetObject'
+              - 's3:PutObject'
+            Effect: Allow
+            Resource:
+              - !Sub 'arn:aws:s3:::${CSVBucketName}-${AWS::Region}-${Environment}'
+              - !Sub 'arn:aws:s3:::${CSVBucketName}-${AWS::Region}-${Environment}/*'
+            Principal: '*'
+            #Condition:
+            #  StringEquals:
+            #    'aws:sourceVpc':
+            #      - !Ref VpcId
+
+Outputs:
+  CSVBucketName:
+    Description: CSV Data bucket name
+    Value: !Ref CSVBucketName
