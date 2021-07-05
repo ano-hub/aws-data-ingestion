@@ -3,17 +3,14 @@ Description: "S3 Buckets creation for CSV raw data"
 
 Parameters:
   CSVBucketName:
-    Type: String
-    Description: CSV Data S3 bucket
-    Default: vplk-csv-data
+    Type: 'AWS::SSM::Parameter::Value<String>'
+    Default: /vplk/rawbucket
   Service:
-    Description: Service tag
-    Type: String
-    Default: Vepolink
+    Type: 'AWS::SSM::Parameter::Value<String>'
+    Default: /vplk/servicetag
   Environment:
-    Description: Environment tag
-    Type: String
-    Default: DEV
+    Type: 'AWS::SSM::Parameter::Value<String>'
+    Default: /vplk/env
 
 
 Resources:
