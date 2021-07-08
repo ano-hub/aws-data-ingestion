@@ -1,0 +1,32 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: "Create parameters in AWS SSM parameters store, will be used by other templates."
+
+
+Resources:
+
+  EnvTag:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: "/vplk/env"
+      Type: "String"
+      Value: "Vepolink"
+      Description: "Environment name."
+      AllowedPattern: "^[a-zA-Z0-9.\\-_]+$"
+
+  ServiceTag:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: "/vplk/servicetag"
+      Type: "String"
+      Value: "Vepolink"
+      Description: "Service name."
+      AllowedPattern: "^[a-zA-Z0-9.\\-_]+$"
+
+  CSVBucketName:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: "/vplk/rawbucket"
+      Type: "String"
+      Value: "vplk-raw-data"
+      Description: "CSV Data S3 bucket."
+      AllowedPattern: "^[a-zA-Z0-9.\\-_]+$"
