@@ -37,25 +37,6 @@ Resources:
           Value: !Ref Service
         - Key: Environment
           Value: !Ref Environment
-  
-  CSVBucketPolicy:
-    Type: 'AWS::S3::BucketPolicy'
-    Properties:
-      Bucket: !Ref CSVBucket
-      PolicyDocument:
-        Statement:
-          - Action:
-              - 's3:GetObject'
-              - 's3:PutObject'
-            Effect: Allow
-            Resource:
-              - !Sub 'arn:aws:s3:::${CSVBucketName}-${AWS::Region}-${Environment}'
-              - !Sub 'arn:aws:s3:::${CSVBucketName}-${AWS::Region}-${Environment}/*'
-            Principal: '*'
-            #Condition:
-            #  StringEquals:
-            #    'aws:sourceVpc':
-            #      - !Ref VpcId
 
 Outputs:
   CSVBucketName:
