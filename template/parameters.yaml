@@ -9,7 +9,7 @@ Resources:
     Properties:
       Name: "/vplk/env"
       Type: "String"
-      Value: "Vepolink"
+      Value: "dev"
       Description: "Environment name."
       AllowedPattern: "^[a-zA-Z0-9.\\-_]+$"
 
@@ -29,4 +29,31 @@ Resources:
       Type: "String"
       Value: "vplk-raw-data"
       Description: "CSV Data S3 bucket."
+      AllowedPattern: "^[a-zA-Z0-9.\\-_]+$"
+
+  DeployRoleName:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: "/vplk/deployrole"
+      Type: "String"
+      Value: "vplk-deploy-role"
+      Description: "Deployment role."
+      AllowedPattern: "^[a-zA-Z0-9.\\-_]+$"
+
+  IamPolicy:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: "/vplk/iampolicy"
+      Type: "String"
+      Value: "vplk-iam-policy"
+      Description: "IAM specific policy"
+      AllowedPattern: "^[a-zA-Z0-9.\\-_]+$"
+
+  S3Policy:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: "/vplk/s3policy"
+      Type: "String"
+      Value: "vplk-s3-policy"
+      Description: "S3 specific policy"
       AllowedPattern: "^[a-zA-Z0-9.\\-_]+$"
