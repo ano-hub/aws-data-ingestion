@@ -18,9 +18,13 @@ role_arn="arn:aws:iam::828206008857:role/vplk-deploy-role-<ENV>"
 today_date=$(date +%d%m%Y)
 
 usage() {
-    echo "Usage: deploy.sh -e <ENV_NAME> -t <TEMPLATE_FILE> -s <STACK_NAME> -r <REGION_NAME> -g <TAG_FILE>"
+    echo "Usage: deploy.sh -e <ENV_NAME>"
 }
 
+get_abs_path() {
+    dir=$1
+    echo `pwd`/$1
+}
 
 get_stack_name() {
     filename=$(basename "$1")
@@ -48,30 +52,30 @@ createstack() {
 
 # Entry Point
 
-while getopts ":e:t:g:" opt; do
+while getopts ":e:" opt; do
     case "${opt}" in
         e) env_name=${OPTARG}
-           ;;
-        t) template=${OPTARG}
-           ;;
-        g) tag_file=${OPTARG}
            ;;
     esac
 done
 
 # Validate inputs
-if [ -z ${env_name} ] || [ -z ${template} ] || [ -z ${tag_file} ]
+if [ -z ${env_name} ]
 then
     usage
     exit 1
 else
     echo "$today_date: Vepolink AWS Components creation process..."
 
-    file=`ls -1 $template/param*.yaml`
+    template_dir=$(get_abs_path 'template')
+    conf_dir=$(get_abs_path 'conf')
+    template_file=`ls -1 $template_dir/param*.yaml`
+    tag_file=`ls -1 $conf_dir/tags.json`
+
     stack=$(get_stack_name $file $env_name)
 
     echo "$today_date: Creating stack: --stack-name ${stack} for cloudformation template $file"
 
-    createstack $stack ${file} $tag_file
+    createstack $stack ${template_file} ${tag_file}
 
 fi
