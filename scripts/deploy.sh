@@ -33,6 +33,21 @@ get_stack_name() {
 }
 
 
+# The purpose of this subroutine is to check whether the stack with the same name already exists.
+checkstack() {
+ flag=
+ stderr=$(( aws cloudformation describe-stacks --stack-name $1 --region $region) 2>&1)
+ ret_code=$?
+ if [[ $stderr =~ "Stack with id $1 does not exist" && $ret_code -eq 255 ]]
+ then
+  flag=0
+ else
+  flag=1
+ fi
+ echo $flag
+}
+
+
 # The purpose of this subroutine is to create a new cloudformation stack.
 createstack() {
 
@@ -43,7 +58,12 @@ createstack() {
  role_arn1=$(echo "$role_arn" | sed "s/<ENV>/$env_name/g")
 
  aws cloudformation ${formation_type} --role-arn $role_arn1 --stack-name ${stack} ${templ} --capabilities ${capabilities} --region ${region} ${tags}
-
+ ret_code=$?
+ if [[ $ret_code -eq 0 ]]
+ then
+  echo "$today_date: Waiting for stack ${stack} create..."
+  aws cloudformation wait ${poll_type} --stack-name ${stack} --region ${region}
+ fi
 }
 
 ##########################################
@@ -72,10 +92,14 @@ else
     template_file=`ls -1 $template_dir/param*.yaml`
     tag_file=`ls -1 $conf_dir/tags.json`
 
-    stack=$(get_stack_name $file $env_name)
+    stack=$(get_stack_name $template_file $env_name)
 
-    echo "$today_date: Creating stack: --stack-name ${stack} for cloudformation template $file"
+    rc=$(checkstack ${stack_name})
 
-    createstack $stack ${template_file} ${tag_file}
+    if [[ $rc -eq 0 ]]
+    then
+     echo "$today_date: Creating stack: --stack-name ${stack} for cloudformation template $file"
+     createstack $stack ${template_file} ${tag_file}
+    fi
 
 fi
