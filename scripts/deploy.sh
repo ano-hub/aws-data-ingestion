@@ -18,7 +18,7 @@ role_arn="arn:aws:iam::828206008857:role/vplk-deploy-role-<ENV>"
 today_date=$(date +%d%m%Y)
 
 usage() {
-    echo "Usage: deploy.sh -e <ENV_NAME>"
+    echo "Usage: bash scripts/deploy.sh -e <ENV_NAME>"
 }
 
 get_abs_path() {
@@ -89,9 +89,9 @@ else
 
     template_dir=$(get_abs_path 'template')
     conf_dir=$(get_abs_path 'conf')
-    template_file=`ls -1 $template_dir/param*.yaml`
     tag_file=`ls -1 $conf_dir/tags.json`
 
+    template_file=`ls -1 $template_dir/param*.yaml`
     stack=$(get_stack_name $template_file $env_name)
 
     rc=$(checkstack ${stack_name})
@@ -100,6 +100,22 @@ else
     then
      echo "$today_date: Creating stack: --stack-name ${stack} for cloudformation template $file"
      createstack $stack ${template_file} ${tag_file}
+    else
+     echo "$today_date: --stack-name ${stack} already exists..."
     fi
+
+    template_file=`ls -1 $template_dir/buckets*.yaml`
+    stack=$(get_stack_name $template_file $env_name)
+
+    rc=$(checkstack ${stack_name})
+
+    if [[ $rc -eq 0 ]]
+    then
+     echo "$today_date: Creating stack: --stack-name ${stack} for cloudformation template $file"
+     createstack $stack ${template_file} ${tag_file}
+    else
+     echo "$today_date: --stack-name ${stack} already exists..."
+    fi
+
 
 fi
