@@ -20,8 +20,20 @@ usage() {
     echo "Usage: bash scripts/config_scripts.sh.sh -e <ENV_NAME>"
 }
 
-configure_code() {
-    bucket_name=$bucket_prefix-$env_name
+configure_csv_code() {
+
+    bucket_name=$1
+    ec2_dir=$2
+
+    for file in `aws s3 ls s3://vplk-code-ap-south-1-dev/vplk_scripts/`; do
+     if [[ $file =~ 'csv' ]]
+     then
+      echo "$today_date: Copying the file $file to ${ec2_dir} location..." >> ${VPLK_LOG_FILE}
+      stderr=$((aws s3 cp s3://$bucket_name/vplk_scripts/$file $ec2_dir) 2>&1)
+      chmod 755 $ec2_dir/$file
+     fi
+    done
+
 }
 
 ##########################################
@@ -51,6 +63,6 @@ else
     fi
 
     echo "$today_date: Vepolink configuring scripts on EC2 box..." >> ${VPLK_LOG_FILE}
-    configure_code
+    configure_csv_code $bucket_prefix-$env_name /etc/scripts
 
 fi
