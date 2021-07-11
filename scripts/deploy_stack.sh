@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 
 #==============================================================================
-#Title          : deploy.sh
+#Title          : deploy_stack.sh
 #Description    : This script will deploy Vepolink cloudformation template to setup AWS Infrastructure.
 #Author		    : Gunjan Shah
 #Date           : 5 JUL 2021
@@ -22,7 +22,7 @@ VPLK_LOG_FILE=/tmp/vplk-stack-deploy.log
 today_date=$(date +%d%m%Y)
 
 usage() {
-    echo "Usage: bash scripts/deploy.sh -e <ENV_NAME>"
+    echo "Usage: bash scripts/deploy_stack.sh -e <ENV_NAME>"
 }
 
 get_abs_path() {
