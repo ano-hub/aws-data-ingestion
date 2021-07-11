@@ -159,5 +159,4 @@ else
      updatestack $stack ${template_file} ${tag_file}
     fi
 
-
 fi
