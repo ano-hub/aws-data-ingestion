@@ -22,6 +22,15 @@ Resources:
       Description: "Service name."
       AllowedPattern: "^[a-zA-Z0-9.\\-_]+$"
 
+  CodeBucketName:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: "/vplk/codebucket"
+      Type: "String"
+      Value: "vplk-code"
+      Description: "CSV Data S3 bucket."
+      AllowedPattern: "^[a-zA-Z0-9.\\-_]+$"
+
   CSVBucketName:
     Type: AWS::SSM::Parameter
     Properties:
