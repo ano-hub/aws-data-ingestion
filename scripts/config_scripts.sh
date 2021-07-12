@@ -11,6 +11,9 @@
 service='Vepolink'
 region=ap-south-1
 bucket_prefix='vplk-code-'$region
+csv_folder='processing_csv'
+source_dir=/tmp/vplk_csv
+target_loc='vplk-raw-data-'$region
 
 VPLK_LOG_FILE=/tmp/vplk-config-scripts.log
 
@@ -24,6 +27,7 @@ configure_csv_code() {
 
     bucket_name=$1
     ec2_dir=$2
+    target_loc=$3
 
     for file in `aws s3 ls s3://vplk-code-ap-south-1-dev/vplk_scripts/`; do
      if [[ $file =~ 'csv' ]]
@@ -31,9 +35,17 @@ configure_csv_code() {
       echo "$today_date: Copying the file $file to ${ec2_dir} location..." >> ${VPLK_LOG_FILE}
       stderr=$((aws s3 cp s3://$bucket_name/vplk_scripts/$file $ec2_dir) 2>&1)
       chmod 755 $ec2_dir/$file
+      get_cronjob_cmd $target_loc $ec2_dir/$file
      fi
     done
 
+}
+
+# Create and setup backup script into cron
+get_cronjob_cmd() {
+ bucket=$1
+ script=$2
+ echo "* * * * * python3 $script $bucket $source_dir $csv_folder"
 }
 
 ##########################################
@@ -63,6 +75,6 @@ else
     fi
 
     echo "$today_date: Vepolink configuring scripts on EC2 box..." >> ${VPLK_LOG_FILE}
-    configure_csv_code $bucket_prefix-$env_name /etc/scripts
+    configure_csv_code $bucket_prefix-$env_name /etc/scripts $target_loc-$env_name
 
 fi
