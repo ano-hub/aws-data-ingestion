@@ -2,6 +2,9 @@ AWSTemplateFormatVersion: 2010-09-09
 Description: "S3 Buckets creation for CSV raw data"
 
 Parameters:
+  CodeBucketName:
+    Type: 'AWS::SSM::Parameter::Value<String>'
+    Default: /vplk/codebucket
   CSVBucketName:
     Type: 'AWS::SSM::Parameter::Value<String>'
     Default: /vplk/rawbucket
@@ -14,6 +17,29 @@ Parameters:
 
 
 Resources:
+
+  CodeBucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+    Properties:
+      BucketName:
+        !Sub '${CodeBucketName}-${AWS::Region}-${Environment}'
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: True
+        BlockPublicPolicy: True
+        IgnorePublicAcls: True
+        RestrictPublicBuckets: True
+      VersioningConfiguration:
+        Status: Enabled
+      Tags:
+        - Key: Service
+          Value: !Ref Service
+        - Key: Environment
+          Value: !Ref Environment
 
   CSVBucket:
     Type: AWS::S3::Bucket
